@@ -27,7 +27,12 @@
         "plugin:@nx/typescript",
         "plugin:@typescript-eslint/recommended-type-checked"
       ],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
+        ]
+      }
     },
     {
       "files": ["*.spec.ts", "*.spec.tsx"],

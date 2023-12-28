@@ -2,7 +2,10 @@
   "extends": ["../../../.eslintrc.json"],
   "ignorePatterns": ["!**/*", "vite.config.ts"],
   "parserOptions": {
-    "project": ["libs/traffic/feature-ingress/tsconfig.lib.json"]
+    "project": [
+      "libs/traffic/feature-ingress/tsconfig.lib.json",
+      "libs/traffic/feature-ingress/tsconfig.spec.json"
+    ]
   },
   "overrides": [
     {

@@ -12,6 +12,18 @@
           "fix": true
         }
       }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../../coverage/libs/traffic/feature-ingress"
+      },
+      "configurations": {
+        "watch": {
+          "watch": true
+        }
+      }
     }
   },
   "tags": []
