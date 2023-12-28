@@ -1,6 +1,8 @@
 # Statscore exercise
 Exercise files are located in `exercise` directory. The input was extracted to `input.json` file.
 
+Read description below to learn about the project structure and repository features.
+
 ## Getting started
 
 The project is built with NX so building and running can things can be done using NX targets. Running the commands twice the second run will hit NX cache since files did not change. 
@@ -218,7 +220,7 @@ The target use-case is located in `feature-ingress` library and is implemented i
 Alongside the command, we can implement a Controller consuming `IngressService` exposing the feature as HTTP API.
 
 ### Project apps and libs structure
-The Project is a monorepo managed by NX and is divided into apps and libs. Applications can only import libraries and libraries can only import other libraries. This allows to development and testing of libraries in isolation and forces the team to respect module boundaries. 
+The project is a monorepo managed by NX and is divided into apps and libs. Applications can only import libraries and libraries can only import other libraries. This allows to development and testing of libraries in isolation and forces the team to respect module boundaries. 
 
 The diagram below shows proposed repository structure. Emphasized items are implemented libraries.
 
@@ -249,7 +251,7 @@ The diagram below shows proposed repository structure. Emphasized items are impl
 
 #### Brief summary
 
-* Diagrams with PlantUML
+* PlantUML diagrams
 * ESLint
   * @typescript-eslint with parsing - type-checked
 * Prettier
