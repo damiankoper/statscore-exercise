@@ -1,0 +1,28 @@
+{
+  "plantuml.server": "http://www.plantuml.com/plantuml",
+  "cSpell.words": [
+    "Azoty",
+    "Buildable",
+    "endmindmap",
+    "ianvs",
+    "lintstaged",
+    "nestjs",
+    "plantuml",
+    "Pogoń",
+    "Puławy",
+    "Sharapova",
+    "startmindmap",
+    "statscore",
+    "Szczeciń",
+    "Tychy"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "explorerExclude.backup": {}
+}
