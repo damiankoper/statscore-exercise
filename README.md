@@ -1,36 +1,258 @@
 # Statscore exercise
-Source exercise files are located in `exercise` directory.
+Exercise files are located in `exercise` directory. The input was extracted to `input.json` file.
+
+## Getting started
+
+The project is built with NX so building and running can things can be done using NX targets. Running the commands twice the second run will hit NX cache since files did not change. 
+
+#### Install deps
+This should install dependencies and setup git-hooks.
+```sh
+npm install
+```
+
+#### Lint
+```sh
+nx run-many --target=lint
+```
+
+#### Tests
+```sh
+nx run-many --target=test
+```
+
+#### Build CLI app
+```sh
+nx build cli
+nx run cli:build
+```
+
+#### Build CLI app
+The build step will create files in `dist/apps/cli`.
+```sh
+nx build cli
+nx run cli:build # alternative
+```
+
+#### Run CLI app
+With build process included. Note that the path to input JSON file is passed to the script as an argument in NX project config.
+```sh
+nx serve cli
+nx run cli:serve # alternative
+
+nx run cli:serve:development # with debug and watch
+```
+
+Raw - without build target and predefined arguments
+```sh
+node dist/apps/cli/main.js --input exercise/input.json
+```
+
+### Result
+The CLI app should print the parsed events according to exercise app.js file.
+```sh
+$ node dist/apps/cli/main.js --input exercise/input.json
+[
+  {
+    "name": "Chelsea - Arsenal",
+    "score": "2:1"
+  },
+  {
+    "name": "Germany - France",
+    "score": "Main score: 3:0 (set1 25:23, set2 25:19, set3 25:21)"
+  },
+  {
+    "name": "Pogoń Szczeciń vs Azoty Puławy",
+    "score": "34:26"
+  },
+  {
+    "name": "GKS Tychy - GKS Katowice",
+    "score": "9:7,2:1,5:3,9:9"
+  },
+  {
+    "name": "Maria Sharapova vs Serena Williams",
+    "score": "Main score: 2:1 (set1 7:6, set2 6:3, set3 6:7)"
+  }
+]
+```
+
+
 
 ## Before refactor
-I assumed that in standard scenario the code would be part of a larger codebase. Prior to the refactor I would:
-1. Talk with the primary code owner - team or team member to establish right course of the refactor.
+I assumed that in a standard scenario, the code would be part of a larger codebase. Before the refactoring, I would:
+1. Talk with the primary code owner - team or team member to establish the right course of the refactor.
 2. Analyze the rest of the codebase (surrounding module) and look for coding conventions (naming, module boundaries, testing, etc.) to make sure that the refactored code meets the standards and conventions.
-   1. If the refactor would force me to establish new conventions or change the existing ones I'd talk with the team to agree on common solution and document it if needed.
+   1. If the refactor would force me to establish new conventions or change the existing ones I'd talk with the team to agree on a common solution and document it if needed.
+
+This project is complex on purpose. Working on this refactor I had scalability, maintainability and developer experience in mind. 
 
 ### Traffic domain
-`Traffic` is the chosen name of the domain which is responsible for event management. For further development it would be the best to separate the code into `ingress` and `egress` subdomains or even into separate libraries.
+`Traffic` is the chosen name of the domain which is responsible for event management. For further development it would be best to separate the code into `ingress` and `egress` subdomains or even into separate libraries - it all depends on the domain itself.
+
+The diagram below shows the domain class structure. Factory classes are responsible for creating domain objects - `MatchEvent` and `MatchScore`. Each `MatchEvent` has the knowledge and data of how to create its summary (name and score). Note that the domain library does not depend on any infrastructure interface and thus can be used by multiple consumers (e.g. HTTP API, CLI, QueryBus, etc).
+
+![image](https://github.com/damiankoper/statscore-exercise/assets/28621467/a9dacb19-6a59-4afd-8402-49d2909f7c7a)
+
+
+<details><summary>Diagram source</summary>
+
+```plantuml
+@startuml
+
+hide empty members
+
+interface MatchEvent{
+  + score: MatchScore
+  + getSummary(): MatchEventSummary
+}
+
+interface Participants {
+  + participant1: string
+  + participant2: string
+}
+
+MatchEvent -|> Participants 
+
+class BasketballMatchEvent{
+  + {static} getSportType(): SportType
+  + {static} getScoreType(): ScoreType
+}
+
+class VolleyballMatchEvent{
+  + {static} getSportType(): SportType
+  + {static} getScoreType(): ScoreType
+}
+
+class HandballMatchEvent{
+  + {static} getSportType(): SportType
+  + {static} getScoreType(): ScoreType
+}
+
+class SoccerMatchEvent{
+  + {static} getSportType(): SportType
+  + {static} getScoreType(): ScoreType
+}
+
+class TennisMatchEvent{
+  + {static} getSportType(): SportType
+  + {static} getScoreType(): ScoreType
+}
+
+class MatchScore {
+  + main: Score
+  + periods: Score[]
+}
+
+class Score{
+  + p1: number
+  + p2: number
+}
+
+MatchScore  "1..*" *--> Score
+
+MatchEvent <|.. TennisMatchEvent
+MatchEvent <|.. SoccerMatchEvent
+MatchEvent <|.. BasketballMatchEvent
+MatchEvent <|.. HandballMatchEvent
+MatchEvent <|.. VolleyballMatchEvent
+
+
+SoccerMatchEvent *--> MatchScore
+BasketballMatchEvent *--> MatchScore
+HandballMatchEvent *--> MatchScore
+TennisMatchEvent *--> MatchScore
+VolleyballMatchEvent *--> MatchScore
+
+class MatchEventFactory{
+  + parse(input: unknown): MatchEvent
+  + parseSafe(input: unknown): ParseResult<MatchEvent>
+  - parseSport(input: object): string
+  - parseParticipants(input: object): Participants
+  - parseScore(input: object, scoreType: ScoreType): MatchScore
+}
+class MatchScoreFactory{
+  + parseString(score: unknown, firstAsMain: boolean): MatchScore 
+  + parseArray(score: unknown, firstAsMain: boolean): MatchScore 
+  - parseCommas(score: string): Score[]
+  - parseScore(score: string): Score
+}
+
+MatchEventFactory .left.> MatchScoreFactory
+MatchEventFactory ..> MatchEvent: > creates
+MatchScoreFactory ..> MatchScore: > creates
+
+enum SportType {
+  Basketball
+  Volleyball
+  Handball
+  Tennis
+  Soccer
+}
+
+enum ScoreType{
+  CommaString
+  NestedArray
+}
+
+MatchEventFactory .> SportType
+MatchEventFactory .> ScoreType
+
+class MatchEventSummary {
+  + name: string
+  + score: string
+}
+
+MatchEvent .left.> MatchEventSummary : > creates
+
+@enduml
+```
+
+</details>
+
+#### Parsing 
+
+The pre-parsing of the input objects, before creating the ValueObjects could be done using third-party libraries like `zod`. Not knowing the project's policy on the libraries I've decided to implemented the simplified parsing myself.
+
+### Ingress use-case
+The target use-case is located in `feature-ingress` library and is implemented in `IngressService`. The library is a NestJS module that exports `ParseCommand` - an implementation of `nest-commander` command that allows exposing NestJS features as a CLI tool.
+
+Alongside the command, we can implement a Controller consuming `IngressService` exposing the feature as HTTP API.
 
 ### Project apps and libs structure
-Project a monorepo managed by NX and is divided into apps and libs. Applications can only import libraries and libraries can import only other libraries. This allows to develop and test libraries in isolation and forces the team to respect module boundaries.
+The Project is a monorepo managed by NX and is divided into apps and libs. Applications can only import libraries and libraries can only import other libraries. This allows to development and testing of libraries in isolation and forces the team to respect module boundaries. 
+
+The diagram below shows proposed repository structure. Emphasized items are implemented libraries.
+
+![image](https://github.com/damiankoper/statscore-exercise/assets/28621467/4423ea0c-65a6-4f0b-a922-c78aaebbc9b2)
+
+
+<details><summary>Diagram source</summary>
 
 ```plantuml
 @startmindmap
 * <i><b>apps
-**[#lightgreen] <b>traffic-api
+**[#lightgreen] api
+**[#lightgreen] <b>cli
 * <i><b>libs
 **[#lightblue] <b>traffic
 ***[#FFBBCC] <b>domain
 ***[#FFBBCC] <b>feature-ingress
 
-**[#lightblue] shared
+**[#lightblue] <b>shared
 ***[#FFBBCC] domain
-***[#FFBBCC] utils
+***[#FFBBCC] <b>utils
 @endmindmap
 ```
 
-### Repository features
+</details>
+
+### Notes and repository features
+
+#### Brief summary
+
+* Diagrams with PlantUML
 * ESLint
-  * @typescript-eslint to lint with TS related rules
+  * @typescript-eslint with parsing - type-checked
 * Prettier
 * NX monorepo
   * task orchestration
@@ -44,25 +266,23 @@ Project a monorepo managed by NX and is divided into apps and libs. Applications
     * conventional commits
     * commit scope integrated with NX monorepo
 
-### Notes
-Reasons behind decisions made during refactor.
 
 #### Tests
-// TODO
+Every class in the domain and feature libraries is tested. Test files are co-located with the implementation.
 
 #### NX and library structure
 Approaching the refactor I assumed that the code is a part of a bigger codebase
 because this is usually the case. 
 I've chosen NX to easily create and manage libraries and declare architectural module boundaries.
-I've tried to separate domain model and services from shared utils and potentially kernel.
-I've added some example application layer with NestJS to demonstrate how it integrates with the chosen repository management conventions and architecture.
+I've tried to separate domain model and services from shared utils and kernel (in the future).
+I've added CLI application with NestJS to demonstrate how it integrates with the chosen repository management conventions and architecture.
 
-#### Enums
-Enums are controversial in TypeScript since TS team implements features
-only when proposals reach stage 3 of TC39 Process. Enums are not a ECMAScript feature.
-There are voices that simple type union is sufficient. I've used string-only enums with `enum` keyword
-since they are the most versatile and combines TS enum typing and object manipulation features. 
+Workspace graph generated by NX: 
+![image](https://github.com/damiankoper/statscore-exercise/assets/28621467/0cf204af-021d-4016-b7d1-181a06e096c9)
 
-#### Custom parsing
 
-// TODO: describe zod can be used
+#### Further development
+
+* The additional applications can be implemented exposing the implemented feature as Rest/GraphQL API, etc.
+  * Dockerize the implemented apps.
+* The CLI application can be tested to ensure the data-flow correctness and error handling.
