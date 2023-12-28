@@ -1,9 +1,11 @@
 {
   "plantuml.server": "http://www.plantuml.com/plantuml",
+  "plantuml.render": "PlantUMLServer",
   "cSpell.words": [
     "Azoty",
     "Buildable",
     "endmindmap",
+    "enduml",
     "ianvs",
     "lintstaged",
     "nestjs",
@@ -12,6 +14,7 @@
     "Puławy",
     "Sharapova",
     "startmindmap",
+    "startuml",
     "statscore",
     "Szczeciń",
     "Tychy"

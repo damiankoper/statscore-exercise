@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ParseResult } from '@statscore-exercise/shared-utils';
 import { ScoreType } from '../enums/score-type.enum';
 import { InvalidEventInputException } from '../exceptions/invalid-event-input.exception';
 import { MatchEvent } from '../interfaces/match-event.interface';
-import { ParseResult } from '../interfaces/parse-result.interface';
 import { Participants } from '../interfaces/participants.interface';
 import { BasketballMatchEvent } from '../models/match-event/basketball-match-event.model';
 import { HandballMatchEvent } from '../models/match-event/handball-match-event.model';

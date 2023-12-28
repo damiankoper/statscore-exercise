@@ -14,10 +14,6 @@ export class MatchScoreFactory {
     throw new InvalidScoreInputException(score);
   }
 
-  private parseCommas(scores: string): Score[] {
-    return scores.split(',').map((score) => this.parseScore(score));
-  }
-
   public parseArray(score: unknown, firstAsMain = true): MatchScore {
     if (Array.isArray(score)) {
       const scores = score.flat().map((score) => {
@@ -28,6 +24,10 @@ export class MatchScoreFactory {
       return new MatchScore(mainScore, scores);
     }
     throw new InvalidScoreInputException(score);
+  }
+
+  private parseCommas(scores: string): Score[] {
+    return scores.split(',').map((score) => this.parseScore(score));
   }
 
   private parseScore(score: string): Score {

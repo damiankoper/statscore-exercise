@@ -14,6 +14,6 @@ import { IngressService } from './services/ingress.service';
     MatchScoreFactory,
     ParseCommand,
   ],
-  exports: [ParseCommand, MatchEventFactory],
+  exports: [ParseCommand],
 })
 export class IngressModule {}
