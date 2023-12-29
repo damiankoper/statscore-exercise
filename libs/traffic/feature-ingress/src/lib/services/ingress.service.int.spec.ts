@@ -4,6 +4,7 @@ import {
   MatchEventSummary,
   MatchScoreFactory,
 } from '@statscore-exercise/traffic-domain';
+
 import { IngressService } from './ingress.service';
 
 describe('IngressService', () => {

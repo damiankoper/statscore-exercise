@@ -1,4 +1,5 @@
 import { NameUtils } from '@statscore-exercise/shared-utils';
+
 import { ScoreType } from '../../enums/score-type.enum';
 import { SportType } from '../../enums/sport-type.enum';
 import { MatchEvent } from '../../interfaces/match-event.interface';

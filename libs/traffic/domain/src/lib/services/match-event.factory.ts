@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ParseResult } from '@statscore-exercise/shared-utils';
+
 import { ScoreType } from '../enums/score-type.enum';
 import { InvalidEventInputException } from '../exceptions/invalid-event-input.exception';
 import { MatchEvent } from '../interfaces/match-event.interface';

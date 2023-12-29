@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { InvalidScoreInputException } from '../exceptions/invalid-score-input.exception';
 import { MatchScore } from '../models/score/match-score.model';
 import { Score } from '../models/score/score.model';
